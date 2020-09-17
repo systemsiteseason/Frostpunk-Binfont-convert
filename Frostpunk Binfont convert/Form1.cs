@@ -22,12 +22,28 @@ namespace Frostpunk_Binfont_convert
 
         private void btnConvert_Click(object sender, EventArgs e)
         {
-            //opf.Filter = "Binfont file|*.binfont|FNT file|*.fnt";
+            opf.Filter = "Binfont file|*.binfont|FNT file|*.fnt";
             if(opf.ShowDialog() == DialogResult.OK)
             {
                 if (!string.IsNullOrEmpty(opf.FileName))
                 {
-                    var rd = new BinaryReader(File.OpenRead(opf.FileName));
+                    if(Path.GetExtension(opf.FileName) == ".binfont")
+                    {
+                        var rd = new BinaryReader(File.OpenRead(opf.FileName));
+                        int width = 4096;
+                        int magic = rd.ReadInt32();
+                        int ver = rd.ReadInt32();
+                        int texs = rd.ReadInt32();
+                        for(int i = 0; i < texs; i++)
+                        {
+
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                    /*var rd = new BinaryReader(File.OpenRead(opf.FileName));
                     var wt = new BinaryWriter(File.Create("out.dat"));
                     for(int i = 0; i < rd.BaseStream.Length / 4; i++)
                     {
@@ -39,7 +55,7 @@ namespace Frostpunk_Binfont_convert
                             wt.Write((byte)0x00);
                             wt.Write((byte)0xFF);
                         }
-                        else*/ if (argb[0] == argb[1] && argb[0] != 0xFF)
+                        else*/ /*if (argb[0] == argb[1] && argb[0] != 0xFF)
                         {
                             wt.Write(argb[0]);
                             wt.Write(argb[0]);
@@ -62,7 +78,7 @@ namespace Frostpunk_Binfont_convert
                         }
                     }
                     rd.Close();
-                    wt.Close();
+                    wt.Close();*/
                 }
             }
         }
