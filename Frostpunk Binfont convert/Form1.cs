@@ -150,7 +150,8 @@ namespace Frostpunk_Binfont_convert
                     foreach (string line in lines)
                     {
                         mswt.Write(lines.Length - 1);
-
+                        var data = line.Split(' ');
+                        
                     }
                 }
                 catch
