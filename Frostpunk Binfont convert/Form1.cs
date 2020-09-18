@@ -125,7 +125,7 @@ namespace Frostpunk_Binfont_convert
                         ushort id = rd.ReadUInt16();
                         byte page = rd.ReadByte();
                         byte char_left = rd.ReadByte();
-                        fntwt.WriteLine("char=" + Convert.ToChar(id).ToString() + " id=" + id.ToString() + " left=" + left.ToString() + " right=" + right.ToString() + " top=" + top.ToString() + " bottom=" + bottom.ToString() + " width=" + wd.ToString() + " off_left=" + offset_left.ToString() + " off_top=" + offset_top.ToString() + " page=" + page.ToString() + " char_left=" + char_left.ToString());
+                        fntwt.WriteLine("char=" + Convert.ToChar(id).ToString().Replace(" ", "space") + " id=" + id.ToString() + " left=" + left.ToString() + " right=" + right.ToString() + " top=" + top.ToString() + " bottom=" + bottom.ToString() + " width=" + wd.ToString() + " off_left=" + offset_left.ToString() + " off_top=" + offset_top.ToString() + " page=" + page.ToString() + " char_left=" + char_left.ToString());
                     }
                     float next_adv = rd.ReadSingle();
                     float next_adv_a = rd.ReadSingle();
@@ -147,11 +147,53 @@ namespace Frostpunk_Binfont_convert
                     var ms = new MemoryStream();
                     var mswt = new BinaryWriter(ms);
                     string[] lines = File.ReadAllLines(path);
+                    mswt.Write(lines.Length - 1);
+                    int page_count = 0;
                     foreach (string line in lines)
                     {
-                        mswt.Write(lines.Length - 1);
                         var data = line.Split(' ');
-                        
+                        var first = data[0].Split('=');
+                        if (first[0] == "char")
+                        {
+                            var left = data[2].Split('=');
+                            mswt.Write(float.Parse(left[1]));
+                            var right = data[3].Split('=');
+                            mswt.Write(float.Parse(right[1]));
+                            var top = data[4].Split('=');
+                            mswt.Write(float.Parse(top[1]));
+                            var bottom = data[5].Split('=');
+                            mswt.Write(float.Parse(bottom[1]));
+                            var wd = data[6].Split('=');
+                            mswt.Write(float.Parse(wd[1]));
+                            var offset_left = data[7].Split('=');
+                            mswt.Write(float.Parse(offset_left[1]));
+                            var offset_top = data[8].Split('=');
+                            mswt.Write(float.Parse(offset_top[1]));
+                            var id = data[1].Split('=');
+                            mswt.Write(ushort.Parse(id[1]));
+                            var page = data[9].Split('=');
+                            mswt.Write(byte.Parse(page[1]));
+                            var char_left = data[10].Split('=');
+                            mswt.Write(byte.Parse(char_left[1]));
+                            if (byte.Parse(page[1]) >= page_count)
+                                page_count = byte.Parse(page[1]) + 1;
+                        }
+                        else
+                        {
+                            var next_adv = data[0].Split('=');
+                            mswt.Write(float.Parse(next_adv[1]));
+                            var next_adv_a = data[1].Split('=');
+                            mswt.Write(float.Parse(next_adv_a[1]));
+                            var next_adv_k = data[2].Split('=');
+                            mswt.Write(float.Parse(next_adv_k[1]));
+                        }
+                    }
+                    var wt = new BinaryWriter(File.Create(pth + "\\" + filename.Replace("_tex_", "") + "_new_.binfont"));
+                    wt.Write(39257770724);//magic
+                    wt.Write(page_count);
+                    for(int i = 0; i < page_count; i++)
+                    {
+
                     }
                 }
                 catch
