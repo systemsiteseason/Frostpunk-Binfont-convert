@@ -175,7 +175,7 @@ namespace Frostpunk_Binfont_convert
                             mswt.Write(byte.Parse(page[1]));
                             var char_left = data[10].Split('=');
                             mswt.Write(byte.Parse(char_left[1]));
-                            if (byte.Parse(page[1]) >= page_count && id[1] != "32" && id[1] != "160")
+                            if (byte.Parse(page[1]) >= page_count && byte.Parse(page[1]) != 255)
                                 page_count = byte.Parse(page[1]) + 1;
                         }
                         else
