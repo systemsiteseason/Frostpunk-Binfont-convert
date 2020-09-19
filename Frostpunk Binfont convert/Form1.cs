@@ -130,7 +130,7 @@ namespace Frostpunk_Binfont_convert
                     float next_adv = rd.ReadSingle();
                     float next_adv_a = rd.ReadSingle();
                     float next_adv_k = rd.ReadSingle();
-                    fntwt.WriteLine("next_adv=" + next_adv.ToString() + " next_adv_a=" + next_adv.ToString() + " next_adv_k=" + next_adv.ToString());
+                    fntwt.WriteLine("next_adv=" + next_adv.ToString() + " next_adv_a=" + next_adv_a.ToString() + " next_adv_k=" + next_adv_k.ToString());
                     fntwt.Close();
                     Console.WriteLine("Done!");
                 }
