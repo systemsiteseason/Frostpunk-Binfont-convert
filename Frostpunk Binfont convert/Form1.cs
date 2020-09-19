@@ -207,13 +207,13 @@ namespace Frostpunk_Binfont_convert
                         byte[] buffer = Enc(rdtex.ReadBytes((int)(rdtex.BaseStream.Length - rdtex.BaseStream.Position)));
                         wt.BaseStream.Seek(page_count * 4, SeekOrigin.Current);
                         wt.Write(buffer);
-                        wt.Write(ms.ToArray());
-                        wt.BaseStream.Seek(12, SeekOrigin.Begin);
-                        wt.Write(lsheight.SelectMany(BitConverter.GetBytes).ToArray());
                     }
+                    wt.Write(ms.ToArray());
+                    wt.BaseStream.Seek(12, SeekOrigin.Begin);
+                    wt.Write(lsheight.SelectMany(BitConverter.GetBytes).ToArray());
                     wt.Close();
                     ms.Close();
-                    Console.WriteLine("Cooked!");
+                    Console.WriteLine("Cooked {0}", pth + "\\" + filename + ".binfont");
                 }
                 catch
                 {
