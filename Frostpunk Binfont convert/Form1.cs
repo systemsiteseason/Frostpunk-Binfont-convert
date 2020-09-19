@@ -175,7 +175,7 @@ namespace Frostpunk_Binfont_convert
                             mswt.Write(byte.Parse(page[1]));
                             var char_left = data[10].Split('=');
                             mswt.Write(byte.Parse(char_left[1]));
-                            if (byte.Parse(page[1]) >= page_count)
+                            if (byte.Parse(page[1]) >= page_count && id[1] != "32" && id[1] != "160")
                                 page_count = byte.Parse(page[1]) + 1;
                         }
                         else
@@ -188,13 +188,32 @@ namespace Frostpunk_Binfont_convert
                             mswt.Write(float.Parse(next_adv_k[1]));
                         }
                     }
-                    var wt = new BinaryWriter(File.Create(pth + "\\" + filename.Replace("_tex_", "") + "_new_.binfont"));
+                    var wt = new BinaryWriter(File.Create(pth + "\\" + filename + ".binfont"));
                     wt.Write(39257770724);//magic
                     wt.Write(page_count);
+                    List<int> lsheight = new List<int>();
                     for(int i = 0; i < page_count; i++)
                     {
-
+                        var rdtex = new BinaryReader(File.OpenRead(pth + "\\" + filename + i.ToString() + ".dds"));
+                        rdtex.BaseStream.Seek(12, SeekOrigin.Begin);
+                        int hght = rdtex.ReadInt32();
+                        lsheight.Add(hght);
+                        rdtex.BaseStream.Seek(68, SeekOrigin.Current);
+                        int chk = rdtex.ReadInt32();
+                        if (chk == 808540228)
+                            rdtex.BaseStream.Seek(60, SeekOrigin.Current);
+                        else
+                            rdtex.BaseStream.Seek(40, SeekOrigin.Current);
+                        byte[] buffer = Enc(rdtex.ReadBytes((int)(rdtex.BaseStream.Length - rdtex.BaseStream.Position)));
+                        wt.BaseStream.Seek(page_count * 4, SeekOrigin.Current);
+                        wt.Write(buffer);
+                        wt.Write(ms.ToArray());
+                        wt.BaseStream.Seek(12, SeekOrigin.Begin);
+                        wt.Write(lsheight.SelectMany(BitConverter.GetBytes).ToArray());
                     }
+                    wt.Close();
+                    ms.Close();
+                    Console.WriteLine("Cooked!");
                 }
                 catch
                 {
@@ -207,6 +226,22 @@ namespace Frostpunk_Binfont_convert
                 MessageBox.Show("File format isn't support!");
                 Console.WriteLine("Wrong format file!");
             }
+        }
+
+        public static byte[] Enc(byte[] data)
+        {
+            var rd = new BinaryReader(new MemoryStream(data));
+            var ms = new MemoryStream();
+            var wt = new BinaryWriter(ms);
+            for (int i = 0; i < rd.BaseStream.Length / 4; i++)
+            {
+                byte[] argb = rd.ReadBytes(4);
+                wt.Write(argb[0]);
+                wt.Write(argb[1]);
+                wt.Write(argb[2]);
+                wt.Write((byte)0x00);
+            }
+            return ms.ToArray();
         }
     }
 }
